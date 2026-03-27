@@ -1,0 +1,743 @@
+{
+  "info": {
+    "_postman_id": "ecfd8c7d-f2b5-4246-be50-e27ba841661f",
+    "name": "AWS Setup Wizard Connect API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "49526032",
+    "_collection_link": "https://go.postman.co/collection/49526032-ecfd8c7d-f2b5-4246-be50-e27ba841661f?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Valid",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const uniqueAlias = \"MyAWSAccount-\" + Date.now() + \"-\" + Math.floor(Math.random() * 100000);\r",
+              "pm.environment.set(\"uniqueAlias\", uniqueAlias);\r",
+              "console.log(\"✅ uniqueAlias set to:\", uniqueAlias);\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"alias\": \"{{uniqueAlias}}\",\r\n    \"accessKey\": \"{{access_key}}\",\r\n    \"secretKey\": \"{{secret_key}}\",\r\n    \"assumedRoleARN\": \"\",\r\n    \"awsOrganization\": false,\r\n    \"regions\": [\r\n        \"us-east-1\",\r\n        \"us-west-2\"\r\n    ],\r\n    \"billingOnly\": false,\r\n    \"organizationalUnitID\": \"ou-xxxx-xxxxxxxx\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/hgs/rest/collectors/records/amazon/connect",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "connect"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "MissingAccessKey",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Tests for MissingAccessKey request",
+              "// Validates status code, JSON shape, and key fields in the response",
+              "",
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "// Validate response body is valid JSON",
+              "let json;",
+              "pm.test(\"Response body is valid JSON\", function () {",
+              "    try {",
+              "        json = pm.response.json();",
+              "        pm.expect(json).to.be.an(\"object\");",
+              "    } catch (e) {",
+              "        // Fail the test explicitly if JSON parsing throws",
+              "        pm.expect.fail(\"Response is not valid JSON: \" + e.message);",
+              "    }",
+              "});",
+              "",
+              "// Only proceed with further checks if json is parsed",
+              "if (typeof json === 'object' && json) {",
+              "    // response.status.isSuccess is boolean and false",
+              "    pm.test(\"status.isSuccess is boolean and false\", function () {",
+              "        pm.expect(json).to.have.property(\"status\").that.is.an(\"object\");",
+              "        pm.expect(json.status).to.have.property(\"isSuccess\").that.is.a(\"boolean\");",
+              "        pm.expect(json.status.isSuccess).to.eql(false);",
+              "    });",
+              "",
+              "    // response.status.status equals 'INVALID'",
+              "    pm.test(\"status.status equals 'INVALID'\", function () {",
+              "        pm.expect(json.status).to.have.property(\"status\").that.is.a(\"string\");",
+              "        pm.expect(json.status.status).to.eql(\"INVALID\");",
+              "    });",
+              "",
+              "    // response.status.recordAlias equals the request body alias",
+              "    pm.test(\"recordAlias equals request alias\", function () {",
+              "        // Parse request body safely",
+              "        let reqBody;",
+              "        try {",
+              "            reqBody = pm.request.body && pm.request.body.raw ? JSON.parse(pm.request.body.raw) : {};",
+              "        } catch(e) {",
+              "            reqBody = {};",
+              "        }",
+              "        const expectedAlias = reqBody && typeof reqBody.alias === 'string' ? reqBody.alias : undefined;",
+              "        pm.expect(json.status).to.have.property(\"recordAlias\");",
+              "        if (expectedAlias !== undefined) {",
+              "            pm.expect(json.status.recordAlias).to.eql(expectedAlias);",
+              "        } else {",
+              "            pm.expect.fail(\"Request body alias not found to compare against recordAlias\");",
+              "        }",
+              "    });",
+              "",
+              "    // response contains operationError string when isSuccess is false",
+              "    pm.test(\"operationError present when isSuccess is false\", function () {",
+              "        if (json.status && json.status.isSuccess === false) {",
+              "            pm.expect(json.status).to.have.property(\"operationError\");",
+              "            pm.expect(json.status.operationError).to.be.a(\"string\").and.not.empty;",
+              "        } else {",
+              "            pm.expect(true).to.be.true; // not applicable",
+              "        }",
+              "    });",
+              "}",
+              "",
+              "// Warn (non-failing) if secretKey or accessKey in request body are empty",
+              "pm.test(\"Warning when accessKey/secretKey are empty (non-failing)\", function () {",
+              "    let reqBody = {};",
+              "    try {",
+              "        reqBody = pm.request.body && pm.request.body.raw ? JSON.parse(pm.request.body.raw) : {};",
+              "    } catch(e) {}",
+              "    const hasEmptyAccess = typeof reqBody.accessKey === 'string' && reqBody.accessKey.trim() === '';",
+              "    const hasEmptySecret = typeof reqBody.secretKey === 'string' && reqBody.secretKey.trim() === '';",
+              "",
+              "    if (hasEmptyAccess || hasEmptySecret) {",
+              "        // Mark as a warning by adding to test output without failing the run",
+              "        pm.test(\"WARN: One or both credentials are empty\", function() {",
+              "            pm.expect(true).to.be.true;",
+              "        });",
+              "        pm.environment.set(\"__credentials_warning\", \"accessKey:\" + (hasEmptyAccess ? \"empty\" : \"set\") + \", secretKey:\" + (hasEmptySecret ? \"empty\" : \"set\"));",
+              "    } else {",
+              "        pm.environment.unset(\"__credentials_warning\");",
+              "        pm.expect(true).to.be.true;",
+              "    }",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"alias\": \"MissingAccessKey\",\r\n    \"secretKey\": \"{{secret_key}}\",\r\n    \"regions\": [\r\n        \"us-east-1\"\r\n    ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/hgs/rest/collectors/records/amazon/connect",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "connect"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "InvalidDataType",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"alias\": 12345,\r\n    \"accessKey\": \"{{access_key}}\",\r\n    \"secretKey\": \"{{secret_key}}\",\r\n    \"awsOrganization\": \"yes\",\r\n    \"regions\": \"us-east-1\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/hgs/rest/collectors/records/amazon/connect",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "connect"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "InvalidCredentials",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"alias\": \"InvalidCreds\",\r\n    \"accessKey\": \"AKIAFAKEEXAMPLE12345\",\r\n    \"secretKey\": \"INVALIDSECRETKEY1234567890\",\r\n    \"regions\": [\r\n        \"us-east-1\"\r\n    ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/hgs/rest/collectors/records/amazon/connect",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "connect"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "InvalidRegion",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"alias\": \"BadRegion\",\r\n    \"accessKey\": \"{{access_key}}\",\r\n    \"secretKey\": \"{{secret_key}}\",\r\n    \"regions\": [\r\n        \"invalid-region\"\r\n    ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/hgs/rest/collectors/records/amazon/connect",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "connect"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "MissingAlias",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"accessKey\": \"{{access_key}}\",\r\n    \"secretKey\": \"{{secret_key}}\",\r\n    \"regions\": [\r\n        \"us-east-1\"\r\n    ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/hgs/rest/collectors/records/amazon/connect",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "connect"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Empty",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/hgs/rest/collectors/records/amazon/connect",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "connect"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "InvalidJSON",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"alias\": \"BadJSON, \"accessKey\": \"{{access_key}\"\r\n }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/hgs/rest/collectors/records/amazon/connect",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "connect"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "UnknownFields",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"alias\": \"ExtraFieldAccount\",\r\n    \"accessKey\": \"AKIA...\",\r\n    \"secretKey\": \"abcd1234...\",\r\n    \"extraField\": \"junk\",\r\n    \"regions\": [\r\n        \"us-east-1\"\r\n    ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/hgs/rest/collectors/records/amazon/connect",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "connect"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "MissingSecretKey",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"alias\": \"NoSecretKey\",\r\n    \"accessKey\": \"{{access_key}}\",\r\n    \"regions\": [\r\n        \"us-east-1\"\r\n    ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/hgs/rest/collectors/records/amazon/connect",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "connect"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "IncorrectMethod",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"alias\": \"{{uniqueAlias}}\",\r\n    \"accessKey\": \"{{access_key}}\",\r\n    \"secretKey\": \"{{secret_key}}\",\r\n    \"assumedRoleARN\": \"\",\r\n    \"awsOrganization\": false,\r\n    \"regions\": [\r\n        \"us-east-1\",\r\n        \"us-west-2\"\r\n    ],\r\n    \"billingOnly\": false,\r\n    \"organizationalUnitID\": \"ou-xxxx-xxxxxxxx\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/hgs/rest/collectors/records/amazon/connect",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "connect"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "EmptyRegion",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"alias\": \"EmptyRegions\",\r\n    \"accessKey\": \"{{access_key}}\",\r\n    \"secretKey\": \"{{secret_key}}\",\r\n    \"regions\": []\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/hgs/rest/collectors/records/amazon/connect",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "connect"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "ExtraField",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"alias\": \"ExtraFieldAccount\",\r\n    \"accessKey\": \"{{access_key}}\",\r\n    \"secretKey\": \"{{secret_key}}\",\r\n    \"extraField\": \"junk\",\r\n    \"regions\": [\r\n        \"us-east-1\"\r\n    ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/hgs/rest/collectors/records/amazon/connect",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "connect"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "NullValues",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"alias\": null,\r\n    \"accessKey\": null,\r\n    \"secretKey\": null\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/hgs/rest/collectors/records/amazon/connect",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "connect"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "AliasLenght",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"alias\": \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\r\n    \"accessKey\": \"{{access_key}}\",\r\n    \"secretKey\": \"{{secret_key}}\",\r\n    \"regions\": [\r\n        \"us-east-1\"\r\n    ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/hgs/rest/collectors/records/amazon/connect",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "connect"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "SetupRemoveRecordID",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"setupDTO\": {\r\n        \"selectedOption\": \"BillingOnly\"\r\n    }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/hgs/rest/collectors/records/amazon/setup",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "setup"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "SetupSelectInvalidOption",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"setupDTO\": {\r\n        \"recordId\": 29,\r\n        \"selectedOption\": \"InvalidOption\"\r\n    }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/hgs/rest/collectors/records/amazon/setup",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "setup"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "SetupEmptyArrayBilling",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"setupDTO\": {\r\n        \"recordId\": 29,\r\n        \"selectedOption\": \"Billing\"\r\n    },\r\n    \"selectedExports\": {\r\n        \"accountId\": \"\",\r\n        \"curExports\": []\r\n    }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/hgs/rest/collectors/records/amazon/setup",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "setup"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "SetupMissingRequiredFields",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"setupDTO\": {\r\n        \"recordId\": 29,\r\n        \"selectedOption\": \"Billing\"\r\n    },\r\n    \"selectedExports\": {\r\n        \"accountId\": \"\",\r\n        \"curExports\": [\r\n            {\r\n                \"Name\": \"Report1\",\r\n                \"Bucket\": \"my-bucket\"\r\n            }\r\n        ]\r\n    }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/hgs/rest/collectors/records/amazon/setup",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "setup"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "access_key",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "secret_key",
+      "value": "",
+      "type": "default"
+    }
+  ]
+}
