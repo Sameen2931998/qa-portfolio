@@ -1,0 +1,1030 @@
+{
+  "info": {
+    "_postman_id": "be15cda5-b781-4e72-b400-911a9e2b5817",
+    "name": "AWS Setup Wizard S3 AI",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "49526032",
+    "_collection_link": "https://go.postman.co/collection/49526032-be15cda5-b781-4e72-b400-911a9e2b5817?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Valid baseline request",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response has 'totalReports' as a number\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData).to.have.property('totalReports');\r",
+              "    pm.expect(jsonData.totalReports).to.be.a('number');\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n   \"recordId\": {{id}},\r\n    \"bucketName\": \"testing-api-aws\",\r\n    \"region\": \"eu-north-1\",\r\n    \"folderPath\": \"MyCURExportPrefix/\"\r\n}"
+        },
+        "url": {
+          "raw": "{{local}}/hgs/rest/collectors/records/amazon/s3-file-count",
+          "host": [
+            "{{local}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "s3-file-count"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Valid request, different recordId",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response has 'totalReports' as a number\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData).to.have.property('totalReports');\r",
+              "    pm.expect(jsonData.totalReports).to.be.a('number');\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n   \"recordId\": 14,\r\n    \"bucketName\": \"testing-api-aws\",\r\n    \"region\": \"eu-north-1\",\r\n    \"folderPath\": \"MyCURExportPrefix/\"\r\n}"
+        },
+        "url": {
+          "raw": "{{local}}/hgs/rest/collectors/records/amazon/s3-file-count",
+          "host": [
+            "{{local}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "s3-file-count"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Subfolder structure",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response has 'totalReports' as a number\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData).to.have.property('totalReports');\r",
+              "    pm.expect(jsonData.totalReports).to.be.a('number');\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n   \"recordId\": {{id}},\r\n    \"bucketName\": \"testing-api-aws\",\r\n    \"region\": \"eu-north-1\",\r\n    \"folderPath\": \"/MyCURExportPrefix/TestExport/\"\r\n}"
+        },
+        "url": {
+          "raw": "{{local}}/hgs/rest/collectors/records/amazon/s3-file-count",
+          "host": [
+            "{{local}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "s3-file-count"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Empty folder",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response has 'totalReports' as a number\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData).to.have.property('totalReports');\r",
+              "    pm.expect(jsonData.totalReports).to.be.a('number');\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n   \"recordId\": {{id}},\r\n    \"bucketName\": \"testing-api-aws\",\r\n    \"region\": \"eu-north-1\",\r\n    \"folderPath\": \"EmptyFolder/\"\r\n}"
+        },
+        "url": {
+          "raw": "{{local}}/hgs/rest/collectors/records/amazon/s3-file-count",
+          "host": [
+            "{{local}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "s3-file-count"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Valid different region",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response has 'totalReports' as a number\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData).to.have.property('totalReports');\r",
+              "    pm.expect(jsonData.totalReports).to.be.a('number');\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n   \"recordId\": {{id}},\r\n    \"bucketName\": \"testing-api-aws\",\r\n    \"region\": \"us-west-2\",\r\n    \"folderPath\": \"MyCURExportPrefix/\"\r\n}"
+        },
+        "url": {
+          "raw": "{{local}}/hgs/rest/collectors/records/amazon/s3-file-count",
+          "host": [
+            "{{local}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "s3-file-count"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Missing trailing slash",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response has 'totalReports' as a number\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData).to.have.property('totalReports');\r",
+              "    pm.expect(jsonData.totalReports).to.be.a('number');\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n   \"recordId\": {{id}},\r\n    \"bucketName\": \"testing-api-aws\",\r\n    \"region\": \"eu-north-1\",\r\n    \"folderPath\": \"MyCURExportPrefix\"\r\n}"
+        },
+        "url": {
+          "raw": "{{local}}/hgs/rest/collectors/records/amazon/s3-file-count",
+          "host": [
+            "{{local}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "s3-file-count"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Large folder, many files",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response has 'totalReports' as a number\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData).to.have.property('totalReports');\r",
+              "    pm.expect(jsonData.totalReports).to.be.a('number');\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"recordId\": 7,\r\n    \"bucketName\": \"hyperglance-master-billing\",\r\n    \"region\": \"us-east-1\",\r\n    \"folderPath\": \"hgcost/\"\r\n}"
+        },
+        "url": {
+          "raw": "{{local}}/hgs/rest/collectors/records/amazon/s3-file-count",
+          "host": [
+            "{{local}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "s3-file-count"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Missing recordId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"bucketName\": \"hyperglance-master-billing\",\r\n    \"region\": \"us-east-1\",\r\n    \"folderPath\": \"hgcost/\"\r\n}"
+        },
+        "url": {
+          "raw": "{{local}}/hgs/rest/collectors/records/amazon/s3-file-count",
+          "host": [
+            "{{local}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "s3-file-count"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "recordId = null",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response has 'totalReports' as a number\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData).to.have.property('totalReports');\r",
+              "    pm.expect(jsonData.totalReports).to.be.a('number');\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"recordId\": null,\r\n    \"bucketName\": \"hyperglance-master-billing\",\r\n    \"region\": \"us-east-1\",\r\n    \"folderPath\": \"hgcost/\"\r\n}"
+        },
+        "url": {
+          "raw": "{{local}}/hgs/rest/collectors/records/amazon/s3-file-count",
+          "host": [
+            "{{local}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "s3-file-count"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Non-numeric recordId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"recordId\": abc,\r\n    \"bucketName\": \"hyperglance-master-billing\",\r\n    \"region\": \"us-east-1\",\r\n    \"folderPath\": \"hgcost/\"\r\n}"
+        },
+        "url": {
+          "raw": "{{local}}/hgs/rest/collectors/records/amazon/s3-file-count",
+          "host": [
+            "{{local}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "s3-file-count"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Missing bucketName",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"recordId\": 7,\r\n    \"region\": \"us-east-1\",\r\n    \"folderPath\": \"hgcost/\"\r\n}"
+        },
+        "url": {
+          "raw": "{{local}}/hgs/rest/collectors/records/amazon/s3-file-count",
+          "host": [
+            "{{local}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "s3-file-count"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Invalid bucketName",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"recordId\": 7,\r\n    \"bucketName\": \"hyperglanc\",\r\n    \"region\": \"us-east-1\",\r\n    \"folderPath\": \"hgcost/\"\r\n}"
+        },
+        "url": {
+          "raw": "{{local}}/hgs/rest/collectors/records/amazon/s3-file-count",
+          "host": [
+            "{{local}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "s3-file-count"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Bucket does not exist",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"recordId\": 12,\r\n    \"bucketName\": \"non-existent-bucket\",\r\n    \"region\": \"us-east-1\",\r\n    \"folderPath\": \"folder/\"\r\n}"
+        },
+        "url": {
+          "raw": "{{local}}/hgs/rest/collectors/records/amazon/s3-file-count",
+          "host": [
+            "{{local}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "s3-file-count"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Invalid region",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"recordId\": 7,\r\n    \"bucketName\": \"hyperglance-master-billing\",\r\n    \"region\": \"us-east-12\",\r\n    \"folderPath\": \"hgcost/\"\r\n}"
+        },
+        "url": {
+          "raw": "{{local}}/hgs/rest/collectors/records/amazon/s3-file-count",
+          "host": [
+            "{{local}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "s3-file-count"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Invalid folderPath characters",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"recordId\": 12,\r\n    \"bucketName\": \"cur-bucket\",\r\n    \"region\": \"us-east-1\",\r\n    \"folderPath\": \"folder/<>*/\"\r\n}"
+        },
+        "url": {
+          "raw": "{{local}}/hgs/rest/collectors/records/amazon/s3-file-count",
+          "host": [
+            "{{local}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "s3-file-count"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Empty folderPath",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"recordId\": 7,\r\n    \"bucketName\": \"hyperglance-master-billing\",\r\n    \"region\": \"us-east-1\",\r\n    \"folderPath\": \"\"\r\n}"
+        },
+        "url": {
+          "raw": "{{local}}/hgs/rest/collectors/records/amazon/s3-file-count",
+          "host": [
+            "{{local}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "s3-file-count"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Whitespace folderPath",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"recordId\": 7,\r\n    \"bucketName\": \"hyperglance-master-billing\",\r\n    \"region\": \"us-east-1\",\r\n    \"folderPath\": \"   \"\r\n}"
+        },
+        "url": {
+          "raw": "{{local}}/hgs/rest/collectors/records/amazon/s3-file-count",
+          "host": [
+            "{{local}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "s3-file-count"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Missing region",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"recordId\": 7,\r\n    \"bucketName\": \"hyperglance-master-billing\",\r\n    \"folderPath\": \"hgcost/\"\r\n}"
+        },
+        "url": {
+          "raw": "{{local}}/hgs/rest/collectors/records/amazon/s3-file-count",
+          "host": [
+            "{{local}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "s3-file-count"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Broken JSON",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"recordId\": 7,\r\n    \"bucketName\": \"cur-bucket\","
+        },
+        "url": {
+          "raw": "{{local}}/hgs/rest/collectors/records/amazon/s3-file-count",
+          "host": [
+            "{{local}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "s3-file-count"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET instead of POST",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"recordId\": 7,\r\n    \"bucketName\": \"hyperglance-master-billing\",\r\n    \"region\": \"us-east-1\",\r\n    \"folderPath\": \"hgcost/\"\r\n}"
+        },
+        "url": {
+          "raw": "{{local}}/hgs/rest/collectors/records/amazon/s3-file-count",
+          "host": [
+            "{{local}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "s3-file-count"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "recordId = 0",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"recordId\": 0,\r\n    \"bucketName\": \"hyperglance-master-billing\",\r\n    \"region\": \"us-east-1\",\r\n    \"folderPath\": \"hgcost/\"\r\n}"
+        },
+        "url": {
+          "raw": "{{local}}/hgs/rest/collectors/records/amazon/s3-file-count",
+          "host": [
+            "{{local}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "s3-file-count"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "recordId = -1",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"recordId\": -1,\r\n    \"bucketName\": \"hyperglance-master-billing\",\r\n    \"region\": \"us-east-1\",\r\n    \"folderPath\": \"hgcost/\"\r\n}"
+        },
+        "url": {
+          "raw": "{{local}}/hgs/rest/collectors/records/amazon/s3-file-count",
+          "host": [
+            "{{local}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "s3-file-count"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Very large recordId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"recordId\": 99999999999,\r\n    \"bucketName\": \"hyperglance-master-billing\",\r\n    \"region\": \"us-east-1\",\r\n    \"folderPath\": \"hgcost/\"\r\n}"
+        },
+        "url": {
+          "raw": "{{local}}/hgs/rest/collectors/records/amazon/s3-file-count",
+          "host": [
+            "{{local}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "s3-file-count"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "255+ char bucket name",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"recordId\": 12,\r\n    \"bucketName\": \"<255 chars>\",\r\n    \"region\": \"us-east-1\",\r\n    \"folderPath\": \"folder/\"\r\n}"
+        },
+        "url": {
+          "raw": "{{local}}/hgs/rest/collectors/records/amazon/s3-file-count",
+          "host": [
+            "{{local}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "s3-file-count"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "1024+ char folder path",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"recordId\": 12,\r\n    \"bucketName\": \"cur-bucket\",\r\n    \"region\": \"us-east-1\",\r\n    \"folderPath\": \"<1024 chars>\"\r\n}"
+        },
+        "url": {
+          "raw": "{{local}}/hgs/rest/collectors/records/amazon/s3-file-count",
+          "host": [
+            "{{local}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "s3-file-count"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Folder with 1 file",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"recordId\": 7,\r\n    \"bucketName\": \"testing-api-aws\",\r\n    \"region\": \"eu-north-1\",\r\n    \"folderPath\": \"one-file/\"\r\n}"
+        },
+        "url": {
+          "raw": "{{local}}/hgs/rest/collectors/records/amazon/s3-file-count",
+          "host": [
+            "{{local}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "s3-file-count"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "folderPath points to a file",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"recordId\": 12,\r\n    \"bucketName\": \"cur\",\r\n    \"region\": \"us-east-1\",\r\n    \"folderPath\": \"file.csv\"\r\n}"
+        },
+        "url": {
+          "raw": "{{local}}/hgs/rest/collectors/records/amazon/s3-file-count",
+          "host": [
+            "{{local}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "collectors",
+            "records",
+            "amazon",
+            "s3-file-count"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "local",
+      "value": "",
+      "type": "default"
+    }
+  ]
+}
