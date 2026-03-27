@@ -1,0 +1,1379 @@
+{
+  "info": {
+    "_postman_id": "aed412a0-c216-40e9-b008-e14a3ec05519",
+    "name": "Cost Center V2",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "49526032",
+    "_collection_link": "https://go.postman.co/collection/49526032-aed412a0-c216-40e9-b008-e14a3ec05519?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "CreateCostCenter-Hierarchy",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// Generate unique cost center name\r",
+              "let unique = \"CostCenter_\" + Date.now();\r",
+              "\r",
+              "// Save to collection variable\r",
+              "pm.environment.set(\"UniqueCostCenterName\", unique);\r",
+              "\r",
+              "console.log(\"Generated UniqueCostCenterName:\", unique);\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// ✅ Status code 200 or 201\r",
+              "pm.test(\"Status code is 200 or 201\", function () {\r",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);\r",
+              "});\r",
+              "\r",
+              "// ✅ Parse JSON safely\r",
+              "let jsonData = {};\r",
+              "try {\r",
+              "    jsonData = pm.response.json();\r",
+              "} catch (e) {\r",
+              "    console.error(\"Response is not valid JSON:\", e);\r",
+              "}\r",
+              "\r",
+              "// ✅ Validate data object and id exists\r",
+              "pm.test(\"Response contains data object with id\", function () {\r",
+              "    pm.expect(jsonData).to.have.property(\"data\");\r",
+              "    pm.expect(jsonData.data).to.have.property(\"id\");\r",
+              "});\r",
+              "\r",
+              "// ✅ Validate cost center name matches request\r",
+              "pm.test(\"Cost center name matches request\", function () {\r",
+              "    const requestBody = JSON.parse(pm.request.body.raw);\r",
+              "    pm.expect(jsonData.data.name).to.eql(requestBody.name);\r",
+              "});\r",
+              "// Parse response\r",
+              "let response = pm.response.json();\r",
+              "\r",
+              "// Save cost center id\r",
+              "pm.environment.set(\"costCenterId\", response.data.id);\r",
+              "\r",
+              "// Log to confirm\r",
+              "console.log(\"Saved costCenterId:\", response.data.id);\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"name\": \"{{UniqueCostCenterName}}\",\r\n    \"hierarchy\": [\r\n        {\r\n            \"name\": \"Engineering\",\r\n            \"parent\": \"{{UniqueCostCenterName}}\",\r\n            \"label\": \"HQ\"\r\n        },\r\n        {\r\n            \"name\": \"Marketing\",\r\n            \"parent\": \"{{UniqueCostCenterName}}\",\r\n            \"label\": \"HQ\"\r\n        },\r\n        {\r\n            \"name\": \"Engineering sub dept\",\r\n            \"parent\": \"Engineering\",\r\n            \"label\": \"Backend Team\"\r\n        },\r\n        {\r\n            \"name\": \"Marketing sub dept\",\r\n            \"parent\": \"Marketing\",\r\n            \"label\": \"Backend Team\"\r\n        },\r\n        {\r\n            \"name\": \"App1\",\r\n            \"parent\": \"Engineering sub dept\",\r\n            \"label\": \"UI Subteam\"\r\n        },\r\n        {\r\n            \"name\": \"App2\",\r\n            \"parent\": \"Engineering sub dept\",\r\n            \"label\": \"UI Subteam\"\r\n        },\r\n        {\r\n            \"name\": \"App1\",\r\n            \"parent\": \"Marketing sub dept\",\r\n            \"label\": \"UI Subteam\"\r\n        }\r\n    ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{costcenter}}/hgs/rest/costcenter/v2/create",
+          "host": [
+            "{{costcenter}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "costcenter",
+            "v2",
+            "create"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Valid",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"AcmeCorp_CostCenter_001\",\r\n    \"hierarchy\": [\r\n        {\r\n            \"name\": \"Engineering\",\r\n            \"parent\": \"AcmeCorp_CostCenter_001\",\r\n            \"label\": \"HQ\"\r\n        },\r\n        {\r\n            \"name\": \"Marketing\",\r\n            \"parent\": \"AcmeCorp_CostCenter_001\",\r\n            \"label\": \"HQ\"\r\n        },\r\n        {\r\n            \"name\": \"Engineering SubDept\",\r\n            \"parent\": \"Engineering\",\r\n            \"label\": \"Backend Team\"\r\n        },\r\n        {\r\n            \"name\": \"Marketing SubDept\",\r\n            \"parent\": \"Marketing\",\r\n            \"label\": \"Backend Team\"\r\n        },\r\n        {\r\n            \"name\": \"AppPortal\",\r\n            \"parent\": \"Engineering SubDept\",\r\n            \"label\": \"UI Subteam\"\r\n        },\r\n        {\r\n            \"name\": \"AppDashboard\",\r\n            \"parent\": \"Engineering SubDept\",\r\n            \"label\": \"UI Subteam\"\r\n        },\r\n        {\r\n            \"name\": \"CampaignPortal\",\r\n            \"parent\": \"Marketing SubDept\",\r\n            \"label\": \"UI Subteam\"\r\n        }\r\n    ]\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{costcenter}}/hgs/rest/costcenter/v2/create",
+              "host": [
+                "{{costcenter}}"
+              ],
+              "path": [
+                "hgs",
+                "rest",
+                "costcenter",
+                "v2",
+                "create"
+              ]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Server",
+              "value": "nginx/1.18.0 (Ubuntu)"
+            },
+            {
+              "key": "Date",
+              "value": "Tue, 10 Feb 2026 14:18:34 GMT"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"status\": \"success\",\n    \"message\": \"Cost center created successfully\",\n    \"data\": {\n        \"id\": 82,\n        \"name\": \"AcmeCorp_CostCenter_001\"\n    }\n}"
+        },
+        {
+          "name": "50Childs",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"{{UniqueCostCenterName}}\",\r\n    \"hierarchy\": [\r\n        {\r\n            \"name\": \"Engineering\",\r\n            \"parent\": \"{{UniqueCostCenterName}}\",\r\n            \"label\": \"HQ\"\r\n        },\r\n        {\r\n            \"name\": \"Marketing\",\r\n            \"parent\": \"{{UniqueCostCenterName}}\",\r\n            \"label\": \"HQ\"\r\n        },\r\n        {\r\n            \"name\": \"Sales\",\r\n            \"parent\": \"{{UniqueCostCenterName}}\",\r\n            \"label\": \"HQ\"\r\n        },\r\n        {\r\n            \"name\": \"HR\",\r\n            \"parent\": \"{{UniqueCostCenterName}}\",\r\n            \"label\": \"HQ\"\r\n        },\r\n        {\r\n            \"name\": \"Finance\",\r\n            \"parent\": \"{{UniqueCostCenterName}}\",\r\n            \"label\": \"HQ\"\r\n        },\r\n        {\r\n            \"name\": \"Engineering Backend\",\r\n            \"parent\": \"Engineering\",\r\n            \"label\": \"Backend Team\"\r\n        },\r\n        {\r\n            \"name\": \"Engineering Frontend\",\r\n            \"parent\": \"Engineering\",\r\n            \"label\": \"Frontend Team\"\r\n        },\r\n        {\r\n            \"name\": \"Engineering DevOps\",\r\n            \"parent\": \"Engineering\",\r\n            \"label\": \"DevOps Team\"\r\n        },\r\n        {\r\n            \"name\": \"Marketing Digital\",\r\n            \"parent\": \"Marketing\",\r\n            \"label\": \"Digital Team\"\r\n        },\r\n        {\r\n            \"name\": \"Marketing Content\",\r\n            \"parent\": \"Marketing\",\r\n            \"label\": \"Content Team\"\r\n        },\r\n        {\r\n            \"name\": \"Sales Domestic\",\r\n            \"parent\": \"Sales\",\r\n            \"label\": \"Regional Team\"\r\n        },\r\n        {\r\n            \"name\": \"Sales International\",\r\n            \"parent\": \"Sales\",\r\n            \"label\": \"Regional Team\"\r\n        },\r\n        {\r\n            \"name\": \"HR Recruitment\",\r\n            \"parent\": \"HR\",\r\n            \"label\": \"Recruitment Team\"\r\n        },\r\n        {\r\n            \"name\": \"HR Payroll\",\r\n            \"parent\": \"HR\",\r\n            \"label\": \"Payroll Team\"\r\n        },\r\n        {\r\n            \"name\": \"Finance Accounting\",\r\n            \"parent\": \"Finance\",\r\n            \"label\": \"Accounting Team\"\r\n        },\r\n        {\r\n            \"name\": \"Finance Reporting\",\r\n            \"parent\": \"Finance\",\r\n            \"label\": \"Reporting Team\"\r\n        },\r\n        {\r\n            \"name\": \"AppPortal\",\r\n            \"parent\": \"Engineering Backend\",\r\n            \"label\": \"UI Subteam\"\r\n        },\r\n        {\r\n            \"name\": \"AppDashboard\",\r\n            \"parent\": \"Engineering Backend\",\r\n            \"label\": \"UI Subteam\"\r\n        },\r\n        {\r\n            \"name\": \"AppAPI\",\r\n            \"parent\": \"Engineering Backend\",\r\n            \"label\": \"API Subteam\"\r\n        },\r\n        {\r\n            \"name\": \"FrontendWebsite\",\r\n            \"parent\": \"Engineering Frontend\",\r\n            \"label\": \"Web Team\"\r\n        },\r\n        {\r\n            \"name\": \"FrontendMobile\",\r\n            \"parent\": \"Engineering Frontend\",\r\n            \"label\": \"Mobile Team\"\r\n        },\r\n        {\r\n            \"name\": \"DevOpsCI\",\r\n            \"parent\": \"Engineering DevOps\",\r\n            \"label\": \"CI/CD\"\r\n        },\r\n        {\r\n            \"name\": \"DevOpsMonitoring\",\r\n            \"parent\": \"Engineering DevOps\",\r\n            \"label\": \"Monitoring\"\r\n        },\r\n        {\r\n            \"name\": \"DigitalSEO\",\r\n            \"parent\": \"Marketing Digital\",\r\n            \"label\": \"SEO\"\r\n        },\r\n        {\r\n            \"name\": \"DigitalAds\",\r\n            \"parent\": \"Marketing Digital\",\r\n            \"label\": \"Ads\"\r\n        },\r\n        {\r\n            \"name\": \"ContentBlog\",\r\n            \"parent\": \"Marketing Content\",\r\n            \"label\": \"Blog Team\"\r\n        },\r\n        {\r\n            \"name\": \"ContentSocial\",\r\n            \"parent\": \"Marketing Content\",\r\n            \"label\": \"Social Team\"\r\n        },\r\n        {\r\n            \"name\": \"DomesticEast\",\r\n            \"parent\": \"Sales Domestic\",\r\n            \"label\": \"East Region\"\r\n        },\r\n        {\r\n            \"name\": \"DomesticWest\",\r\n            \"parent\": \"Sales Domestic\",\r\n            \"label\": \"West Region\"\r\n        },\r\n        {\r\n            \"name\": \"InternationalEMEA\",\r\n            \"parent\": \"Sales International\",\r\n            \"label\": \"EMEA\"\r\n        },\r\n        {\r\n            \"name\": \"InternationalAPAC\",\r\n            \"parent\": \"Sales International\",\r\n            \"label\": \"APAC\"\r\n        },\r\n        {\r\n            \"name\": \"RecruitmentTech\",\r\n            \"parent\": \"HR Recruitment\",\r\n            \"label\": \"Tech Hiring\"\r\n        },\r\n        {\r\n            \"name\": \"RecruitmentNonTech\",\r\n            \"parent\": \"HR Recruitment\",\r\n            \"label\": \"Non-Tech Hiring\"\r\n        },\r\n        {\r\n            \"name\": \"PayrollOperations\",\r\n            \"parent\": \"HR Payroll\",\r\n            \"label\": \"Operations\"\r\n        },\r\n        {\r\n            \"name\": \"PayrollCompliance\",\r\n            \"parent\": \"HR Payroll\",\r\n            \"label\": \"Compliance\"\r\n        },\r\n        {\r\n            \"name\": \"AccountingAP\",\r\n            \"parent\": \"Finance Accounting\",\r\n            \"label\": \"Accounts Payable\"\r\n        },\r\n        {\r\n            \"name\": \"AccountingAR\",\r\n            \"parent\": \"Finance Accounting\",\r\n            \"label\": \"Accounts Receivable\"\r\n        },\r\n        {\r\n            \"name\": \"ReportingMonthly\",\r\n            \"parent\": \"Finance Reporting\",\r\n            \"label\": \"Monthly Reports\"\r\n        },\r\n        {\r\n            \"name\": \"ReportingQuarterly\",\r\n            \"parent\": \"Finance Reporting\",\r\n            \"label\": \"Quarterly Reports\"\r\n        },\r\n        {\r\n            \"name\": \"AppPortalAuth\",\r\n            \"parent\": \"AppPortal\",\r\n            \"label\": \"Auth Team\"\r\n        },\r\n        {\r\n            \"name\": \"AppPortalUI\",\r\n            \"parent\": \"AppPortal\",\r\n            \"label\": \"UI Team\"\r\n        },\r\n        {\r\n            \"name\": \"AppDashboardAnalytics\",\r\n            \"parent\": \"AppDashboard\",\r\n            \"label\": \"Analytics Team\"\r\n        },\r\n        {\r\n            \"name\": \"AppDashboardUI\",\r\n            \"parent\": \"AppDashboard\",\r\n            \"label\": \"UI Team\"\r\n        },\r\n        {\r\n            \"name\": \"FrontendWebsiteLanding\",\r\n            \"parent\": \"FrontendWebsite\",\r\n            \"label\": \"Landing Team\"\r\n        },\r\n        {\r\n            \"name\": \"FrontendWebsiteCMS\",\r\n            \"parent\": \"FrontendWebsite\",\r\n            \"label\": \"CMS Team\"\r\n        },\r\n        {\r\n            \"name\": \"FrontendMobileiOS\",\r\n            \"parent\": \"FrontendMobile\",\r\n            \"label\": \"iOS Team\"\r\n        },\r\n        {\r\n            \"name\": \"FrontendMobileAndroid\",\r\n            \"parent\": \"FrontendMobile\",\r\n            \"label\": \"Android Team\"\r\n        },\r\n        {\r\n            \"name\": \"DigitalAdsPPC\",\r\n            \"parent\": \"DigitalAds\",\r\n            \"label\": \"PPC Team\"\r\n        },\r\n        {\r\n            \"name\": \"DigitalAdsSocial\",\r\n            \"parent\": \"DigitalAds\",\r\n            \"label\": \"Social Ads Team\"\r\n        },\r\n        {\r\n            \"name\": \"ContentBlogWriters\",\r\n            \"parent\": \"ContentBlog\",\r\n            \"label\": \"Writers\"\r\n        },\r\n        {\r\n            \"name\": \"ContentBlogEditors\",\r\n            \"parent\": \"ContentBlog\",\r\n            \"label\": \"Editors\"\r\n        },\r\n        {\r\n            \"name\": \"ContentSocialManagers\",\r\n            \"parent\": \"ContentSocial\",\r\n            \"label\": \"Managers\"\r\n        },\r\n        {\r\n            \"name\": \"ContentSocialDesigners\",\r\n            \"parent\": \"ContentSocial\",\r\n            \"label\": \"Designers\"\r\n        },\r\n        {\r\n            \"name\": \"DevOpsCIInfra\",\r\n            \"parent\": \"DevOpsCI\",\r\n            \"label\": \"Infra Team\"\r\n        },\r\n        {\r\n            \"name\": \"DevOpsCIPipelines\",\r\n            \"parent\": \"DevOpsCI\",\r\n            \"label\": \"Pipelines Team\"\r\n        },\r\n        {\r\n            \"name\": \"DevOpsMonitoringOps\",\r\n            \"parent\": \"DevOpsMonitoring\",\r\n            \"label\": \"Ops Team\"\r\n        },\r\n        {\r\n            \"name\": \"DevOpsMonitoringAlerts\",\r\n            \"parent\": \"DevOpsMonitoring\",\r\n            \"label\": \"Alerts Team\"\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{costcenter}}/hgs/rest/costcenter/v2/create",
+              "host": [
+                "{{costcenter}}"
+              ],
+              "path": [
+                "hgs",
+                "rest",
+                "costcenter",
+                "v2",
+                "create"
+              ]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Server",
+              "value": "nginx/1.18.0 (Ubuntu)"
+            },
+            {
+              "key": "Date",
+              "value": "Tue, 10 Feb 2026 14:22:48 GMT"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "description": "",
+              "type": "text"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"status\": \"success\",\n    \"message\": \"Cost center created successfully\",\n    \"data\": {\n        \"id\": 83,\n        \"name\": \"CostCenter_1770733369363\"\n    }\n}"
+        },
+        {
+          "name": "50Childs again",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"{{UniqueCostCenterName}}\",\r\n  \"hierarchy\": [\r\n    { \"name\": \"Engineering\", \"parent\": \"{{UniqueCostCenterName}}\", \"label\": \"HQ\" },\r\n    { \"name\": \"Marketing\", \"parent\": \"{{UniqueCostCenterName}}\", \"label\": \"HQ\" },\r\n    { \"name\": \"Sales\", \"parent\": \"{{UniqueCostCenterName}}\", \"label\": \"HQ\" },\r\n    { \"name\": \"HR\", \"parent\": \"{{UniqueCostCenterName}}\", \"label\": \"HQ\" },\r\n    { \"name\": \"Finance\", \"parent\": \"{{UniqueCostCenterName}}\", \"label\": \"HQ\" },\r\n\r\n    { \"name\": \"Engineering Backend\", \"parent\": \"Engineering\", \"label\": \"Backend Team\" },\r\n    { \"name\": \"Engineering Frontend\", \"parent\": \"Engineering\", \"label\": \"Frontend Team\" },\r\n    { \"name\": \"Engineering DevOps\", \"parent\": \"Engineering\", \"label\": \"DevOps Team\" },\r\n\r\n    { \"name\": \"Marketing Digital\", \"parent\": \"Marketing\", \"label\": \"Digital Team\" },\r\n    { \"name\": \"Marketing Content\", \"parent\": \"Marketing\", \"label\": \"Content Team\" },\r\n\r\n    { \"name\": \"Sales Domestic\", \"parent\": \"Sales\", \"label\": \"Regional Team\" },\r\n    { \"name\": \"Sales International\", \"parent\": \"Sales\", \"label\": \"Regional Team\" },\r\n\r\n    { \"name\": \"HR Recruitment\", \"parent\": \"HR\", \"label\": \"Recruitment Team\" },\r\n    { \"name\": \"HR Payroll\", \"parent\": \"HR\", \"label\": \"Payroll Team\" },\r\n\r\n    { \"name\": \"Finance Accounting\", \"parent\": \"Finance\", \"label\": \"Accounting Team\" },\r\n    { \"name\": \"Finance Reporting\", \"parent\": \"Finance\", \"label\": \"Reporting Team\" },\r\n\r\n    { \"name\": \"Engineering Backend API\", \"parent\": \"Engineering Backend\", \"label\": \"API Subteam\" },\r\n    { \"name\": \"Engineering Backend UI\", \"parent\": \"Engineering Backend\", \"label\": \"UI Subteam\" },\r\n    { \"name\": \"Engineering Backend QA\", \"parent\": \"Engineering Backend\", \"label\": \"QA Subteam\" },\r\n\r\n    { \"name\": \"Engineering Frontend Web\", \"parent\": \"Engineering Frontend\", \"label\": \"Web Team\" },\r\n    { \"name\": \"Engineering Frontend Mobile\", \"parent\": \"Engineering Frontend\", \"label\": \"Mobile Team\" },\r\n\r\n    { \"name\": \"Engineering DevOps CI\", \"parent\": \"Engineering DevOps\", \"label\": \"CI Team\" },\r\n    { \"name\": \"Engineering DevOps Monitoring\", \"parent\": \"Engineering DevOps\", \"label\": \"Monitoring Team\" },\r\n\r\n    { \"name\": \"Marketing Digital SEO\", \"parent\": \"Marketing Digital\", \"label\": \"SEO Team\" },\r\n    { \"name\": \"Marketing Digital Ads\", \"parent\": \"Marketing Digital\", \"label\": \"Ads Team\" },\r\n\r\n    { \"name\": \"Marketing Content Blog\", \"parent\": \"Marketing Content\", \"label\": \"Blog Team\" },\r\n    { \"name\": \"Marketing Content Social\", \"parent\": \"Marketing Content\", \"label\": \"Social Team\" },\r\n\r\n    { \"name\": \"Sales Domestic East\", \"parent\": \"Sales Domestic\", \"label\": \"East Region\" },\r\n    { \"name\": \"Sales Domestic West\", \"parent\": \"Sales Domestic\", \"label\": \"West Region\" },\r\n    { \"name\": \"Sales Domestic North\", \"parent\": \"Sales Domestic\", \"label\": \"North Region\" },\r\n\r\n    { \"name\": \"Sales International EMEA\", \"parent\": \"Sales International\", \"label\": \"EMEA\" },\r\n    { \"name\": \"Sales International APAC\", \"parent\": \"Sales International\", \"label\": \"APAC\" },\r\n    { \"name\": \"Sales International LATAM\", \"parent\": \"Sales International\", \"label\": \"LATAM\" },\r\n\r\n    { \"name\": \"HR Recruitment Tech\", \"parent\": \"HR Recruitment\", \"label\": \"Tech Hiring\" },\r\n    { \"name\": \"HR Recruitment NonTech\", \"parent\": \"HR Recruitment\", \"label\": \"Non-Tech Hiring\" },\r\n\r\n    { \"name\": \"HR Payroll Operations\", \"parent\": \"HR Payroll\", \"label\": \"Operations\" },\r\n    { \"name\": \"HR Payroll Compliance\", \"parent\": \"HR Payroll\", \"label\": \"Compliance\" },\r\n\r\n    { \"name\": \"Finance Accounting AP\", \"parent\": \"Finance Accounting\", \"label\": \"Accounts Payable\" },\r\n    { \"name\": \"Finance Accounting AR\", \"parent\": \"Finance Accounting\", \"label\": \"Accounts Receivable\" },\r\n\r\n    { \"name\": \"Finance Reporting Monthly\", \"parent\": \"Finance Reporting\", \"label\": \"Monthly Reports\" },\r\n    { \"name\": \"Finance Reporting Quarterly\", \"parent\": \"Finance Reporting\", \"label\": \"Quarterly Reports\" },\r\n\r\n    { \"name\": \"Engineering Backend API Auth\", \"parent\": \"Engineering Backend API\", \"label\": \"Auth Team\" },\r\n    { \"name\": \"Engineering Backend API Data\", \"parent\": \"Engineering Backend API\", \"label\": \"Data Team\" },\r\n\r\n    { \"name\": \"Engineering Frontend Web Landing\", \"parent\": \"Engineering Frontend Web\", \"label\": \"Landing Team\" },\r\n    { \"name\": \"Engineering Frontend Web CMS\", \"parent\": \"Engineering Frontend Web\", \"label\": \"CMS Team\" },\r\n    { \"name\": \"Engineering Frontend Mobile iOS\", \"parent\": \"Engineering Frontend Mobile\", \"label\": \"iOS Team\" },\r\n    { \"name\": \"Engineering Frontend Mobile Android\", \"parent\": \"Engineering Frontend Mobile\", \"label\": \"Android Team\" },\r\n\r\n    { \"name\": \"Marketing Digital Ads PPC\", \"parent\": \"Marketing Digital Ads\", \"label\": \"PPC Team\" },\r\n    { \"name\": \"Marketing Digital Ads Social\", \"parent\": \"Marketing Digital Ads\", \"label\": \"Social Ads Team\" },\r\n\r\n    { \"name\": \"Marketing Content Blog Writers\", \"parent\": \"Marketing Content Blog\", \"label\": \"Writers\" },\r\n    { \"name\": \"Marketing Content Blog Editors\", \"parent\": \"Marketing Content Blog\", \"label\": \"Editors\" },\r\n    { \"name\": \"Marketing Content Social Managers\", \"parent\": \"Marketing Content Social\", \"label\": \"Managers\" },\r\n    { \"name\": \"Marketing Content Social Designers\", \"parent\": \"Marketing Content Social\", \"label\": \"Designers\" },\r\n\r\n    { \"name\": \"Engineering DevOps CI Infra\", \"parent\": \"Engineering DevOps CI\", \"label\": \"Infra Team\" },\r\n    { \"name\": \"Engineering DevOps CI Pipelines\", \"parent\": \"Engineering DevOps CI\", \"label\": \"Pipelines Team\" },\r\n    { \"name\": \"Engineering DevOps Monitoring Ops\", \"parent\": \"Engineering DevOps Monitoring\", \"label\": \"Ops Team\" },\r\n    { \"name\": \"Engineering DevOps Monitoring Alerts\", \"parent\": \"Engineering DevOps Monitoring\", \"label\": \"Alerts Team\" }\r\n  ]\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{costcenter}}/hgs/rest/costcenter/v2/create",
+              "host": [
+                "{{costcenter}}"
+              ],
+              "path": [
+                "hgs",
+                "rest",
+                "costcenter",
+                "v2",
+                "create"
+              ]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Server",
+              "value": "nginx/1.18.0 (Ubuntu)"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 11 Feb 2026 10:41:17 GMT"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "description": "",
+              "type": "text"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"data\": {\n        \"name\": \"CostCenter_1770806477969\",\n        \"id\": 88\n    },\n    \"message\": \"Cost center created successfully\",\n    \"status\": \"success\"\n}"
+        },
+        {
+          "name": "Singlechild",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"{{UniqueCostCenterName}}\",\r\n  \"hierarchy\": [\r\n    {\r\n      \"name\": \"Engineering\",\r\n      \"parent\": \"{{UniqueCostCenterName}}\",\r\n      \"label\": \"HQ\"\r\n    }\r\n  ]\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{costcenter}}/hgs/rest/costcenter/v2/create",
+              "host": [
+                "{{costcenter}}"
+              ],
+              "path": [
+                "hgs",
+                "rest",
+                "costcenter",
+                "v2",
+                "create"
+              ]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Server",
+              "value": "nginx/1.18.0 (Ubuntu)"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 11 Feb 2026 13:16:36 GMT"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"data\": {\n        \"name\": \"CostCenter_1770815796613\",\n        \"id\": 91\n    },\n    \"message\": \"Cost center created successfully\",\n    \"status\": \"success\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "FetchCreatedHierarchy",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Parse the response JSON",
+              "const responseData = pm.response.json();",
+              "",
+              "// Array to store all descendant IDs",
+              "const allDescendantIds = [];",
+              "",
+              "/**",
+              " * Recursively traverses the descendants hierarchy and extracts IDs",
+              " * @param {Array} descendants - Array of descendant objects",
+              " */",
+              "function extractDescendantIds(descendants) {",
+              "    if (!descendants || !Array.isArray(descendants) || descendants.length === 0) {",
+              "        return;",
+              "    }",
+              "    ",
+              "    descendants.forEach(descendant => {",
+              "        if (descendant.descendantId !== undefined && descendant.descendantName) {",
+              "            // Store the ID in the allDescendantIds array",
+              "            allDescendantIds.push(descendant.descendantId);",
+              "            ",
+              "            // Create a sanitized variable name from descendantName",
+              "            // Replace spaces and special characters with underscores",
+              "            const sanitizedName = descendant.descendantName.replace(/[^a-zA-Z0-9]/g, '_');",
+              "            const variableName = `${sanitizedName}_id`;",
+              "            ",
+              "            // Store as individual collection variable",
+              "            pm.collectionVariables.set(variableName, descendant.descendantId);",
+              "            ",
+              "            // Log the extracted ID",
+              "            console.log(`Extracted: ${descendant.descendantName} (ID: ${descendant.descendantId}) -> stored as \"${variableName}\"`);",
+              "        }",
+              "        ",
+              "        // Recursively process nested descendants",
+              "        if (descendant.descendants && descendant.descendants.length > 0) {",
+              "            extractDescendantIds(descendant.descendants);",
+              "        }",
+              "    });",
+              "}",
+              "",
+              "// Start extraction from the top-level descendants array",
+              "if (responseData.descendants) {",
+              "    extractDescendantIds(responseData.descendants);",
+              "}",
+              "",
+              "// Store all IDs as a single collection variable (as JSON string for array storage)",
+              "pm.collectionVariables.set(\"allDescendantIds\", JSON.stringify(allDescendantIds));",
+              "",
+              "// Log summary",
+              "console.log(\"=== Extraction Summary ===\");",
+              "console.log(`Total descendants extracted: ${allDescendantIds.length}`);",
+              "console.log(`All Descendant IDs: ${JSON.stringify(allDescendantIds)}`);",
+              "",
+              "// Test to verify extraction worked",
+              "pm.test(\"Descendant IDs were extracted successfully\", function() {",
+              "    pm.expect(allDescendantIds.length).to.be.greaterThan(0);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{costcenter}}/hgs/rest/costcenter/v2/{{costCenterId}}/hierarchy",
+          "host": [
+            "{{costcenter}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "costcenter",
+            "v2",
+            "{{costCenterId}}",
+            "hierarchy"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GetAvailableDimensionsandValues",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"accountFilters\": {\r\n        \"accounts\": [],\r\n        \"accountGroups\": []\r\n    },\r\n    \"dimensionFilters\": [\r\n        {\r\n            \"filters\": [],\r\n            \"dimension\": \"DATASOURCE\"\r\n        },\r\n        {\r\n            \"filters\": [],\r\n            \"dimension\": \"ACCOUNT\"\r\n        },\r\n        {\r\n            \"filters\": [],\r\n            \"dimension\": \"REGION\"\r\n        },\r\n        {\r\n            \"filters\": [],\r\n            \"dimension\": \"SERVICE\"\r\n        },\r\n        {\r\n            \"filters\": [],\r\n            \"dimension\": \"TRANSACTION_TYPE\"\r\n        }\r\n    ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{costcenter}}/hgs/rest/cost/dimensions-and-values-v2",
+          "host": [
+            "{{costcenter}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "cost",
+            "dimensions-and-values-v2"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "FilteredTotalCost",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"accountFilters\": {\r\n        \"accounts\": [],\r\n        \"accountGroups\": []\r\n    },\r\n    \"costFilters\": {\r\n        \"datasource\": [\r\n            \"Amazon\"\r\n        ],\r\n        \"accounts\": {\r\n            \"Amazon\": [\r\n                \"zainsocialpie\"\r\n            ]\r\n        },\r\n        \"filters\": {\r\n            \"Amazon\": [\r\n                {\r\n                    \"dimension\": \"TRANSACTION_TYPE\",\r\n                    \"filters\": [\r\n                        \"Usage\"\r\n                    ]\r\n                },\r\n                {\r\n                    \"dimension\": \"TAG\",\r\n                    \"tagKey\": \"resourcetags/user:cc\",\r\n                    \"filters\": [\r\n                        \"s3\"\r\n                    ]\r\n                }\r\n            ]\r\n        }\r\n    }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{costcenter}}/hgs/rest/allocation-group/v2/filtered-total-cost",
+          "host": [
+            "{{costcenter}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "allocation-group",
+            "v2",
+            "filtered-total-cost"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "CreateAllocationGroup",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// Generate a unique group name with timestamp",
+              "const baseName = \"Engineering-Amazon-Usage\";",
+              "const timestamp = Date.now();",
+              "const uniqueGroupName = `${baseName}-${timestamp}`;",
+              "",
+              "// Store in environment variable",
+              "pm.environment.set(\"uniqueGroupName\", uniqueGroupName);",
+              "",
+              "// Also store in collection variable for reference",
+              "pm.collectionVariables.set(\"uniqueGroupName\", uniqueGroupName);",
+              "",
+              "console.log(\"Generated unique group name:\", uniqueGroupName);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Parse the JSON response body",
+              "const jsonData = pm.response.json();",
+              "",
+              "// Extract 'id' and 'priority' fields from the response",
+              "const allocationGroupId = jsonData.id;",
+              "const allocationGroupPriority = jsonData.priority;",
+              "",
+              "// Store the values in environment variables",
+              "pm.environment.set(\"allocationGroupId\", allocationGroupId);",
+              "pm.environment.set(\"allocationGroupPriority\", allocationGroupPriority);",
+              "",
+              "// Log the captured values to the console for verification",
+              "console.log(\"Allocation Group ID:\", allocationGroupId);",
+              "console.log(\"Allocation Group Priority:\", allocationGroupPriority);",
+              "",
+              "// Test to verify the response status is 201",
+              "pm.test(\"Response status is 201\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"costCenterId\":{{costCenterId}},\r\n    \"groupName\": \"{{uniqueGroupName}}\",\r\n    \"description\": \"Allocates Amazon usage tagged with eng\",\r\n    \"costFilters\": {\r\n        \"datasource\": [\r\n            \"Amazon\"\r\n        ],\r\n        \"accounts\": {\r\n            \"Amazon\": [\r\n                \"zainsocialpie\"\r\n            ]\r\n        },\r\n        \"filters\": {\r\n            \"Amazon\": [\r\n                {\r\n                    \"dimension\": \"TRANSACTION_TYPE\",\r\n                    \"filters\": [\r\n                        \"Usage\"\r\n                    ]\r\n                },\r\n                {\r\n                    \"dimension\": \"TAG\",\r\n                    \"tagKey\": \"resourcetags/user:cc\",\r\n                    \"filters\": [\r\n                        \"rds\"\r\n                    ]\r\n                }\r\n            ]\r\n        }\r\n    },\r\n    \"lines\": [\r\n        {\r\n            \"descendantId\": 150,\r\n            \"sharePercent\": 70\r\n        },\r\n        {\r\n            \"descendantId\": 152,\r\n            \"sharePercent\": 30\r\n        }\r\n    ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{costcenter}}/hgs/rest/allocation-group/v2/create",
+          "host": [
+            "{{costcenter}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "allocation-group",
+            "v2",
+            "create"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "30LeafNodes",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"costCenterId\": 87,\r\n    \"groupName\": \"{{uniqueGroupName}}\",\r\n    \"description\": \"Allocates Amazon usage tagged with rds across all leaf descendants\",\r\n    \"costFilters\": {\r\n        \"datasource\": [\"Amazon\"],\r\n        \"accounts\": {\r\n            \"Amazon\": [\"zainsocialpie\"]\r\n        },\r\n        \"filters\": {\r\n            \"Amazon\": [\r\n                {\r\n                    \"dimension\": \"TRANSACTION_TYPE\",\r\n                    \"filters\": [\"Usage\"]\r\n                },\r\n                {\r\n                    \"dimension\": \"TAG\",\r\n                    \"tagKey\": \"resourcetags/user:cc\",\r\n                    \"filters\": [\"rds\"]\r\n                }\r\n            ]\r\n        }\r\n    },\r\n    \"lines\": [\r\n        { \"descendantId\": 452, \"sharePercent\": 4 },\r\n        { \"descendantId\": 465, \"sharePercent\": 4 },\r\n        { \"descendantId\": 461, \"sharePercent\": 4 },\r\n        { \"descendantId\": 490, \"sharePercent\": 4 },\r\n        { \"descendantId\": 467, \"sharePercent\": 4 },\r\n        { \"descendantId\": 492, \"sharePercent\": 4 },\r\n        { \"descendantId\": 448, \"sharePercent\": 4 },\r\n        { \"descendantId\": 489, \"sharePercent\": 4 },\r\n        { \"descendantId\": 444, \"sharePercent\": 4 },\r\n        { \"descendantId\": 463, \"sharePercent\": 4 },\r\n        { \"descendantId\": 472, \"sharePercent\": 3 },\r\n        { \"descendantId\": 480, \"sharePercent\": 3 },\r\n        { \"descendantId\": 485, \"sharePercent\": 3 },\r\n        { \"descendantId\": 487, \"sharePercent\": 3 },\r\n        { \"descendantId\": 479, \"sharePercent\": 3 },\r\n        { \"descendantId\": 454, \"sharePercent\": 3 },\r\n        { \"descendantId\": 459, \"sharePercent\": 3 },\r\n        { \"descendantId\": 456, \"sharePercent\": 3 },\r\n        { \"descendantId\": 457, \"sharePercent\": 3 },\r\n        { \"descendantId\": 464, \"sharePercent\": 3 },\r\n        { \"descendantId\": 471, \"sharePercent\": 3 },\r\n        { \"descendantId\": 473, \"sharePercent\": 3 },\r\n        { \"descendantId\": 495, \"sharePercent\": 3 },\r\n        { \"descendantId\": 446, \"sharePercent\": 3 },\r\n        { \"descendantId\": 449, \"sharePercent\": 3 },\r\n        { \"descendantId\": 494, \"sharePercent\": 3 },\r\n        { \"descendantId\": 466, \"sharePercent\": 3 },\r\n        { \"descendantId\": 481, \"sharePercent\": 3 },\r\n        { \"descendantId\": 476, \"sharePercent\": 3 },\r\n        { \"descendantId\": 477, \"sharePercent\": 3 },\r\n        { \"descendantId\": 453, \"sharePercent\": 3 },\r\n        { \"descendantId\": 478, \"sharePercent\": 3 }\r\n    ]\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{costcenter}}/hgs/rest/allocation-group/v2/create",
+              "host": [
+                "{{costcenter}}"
+              ],
+              "path": [
+                "hgs",
+                "rest",
+                "allocation-group",
+                "v2",
+                "create"
+              ]
+            }
+          },
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Server",
+              "value": "nginx/1.18.0 (Ubuntu)"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 11 Feb 2026 10:14:22 GMT"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"error\": \"Sum of sharePercent must not exceed 100\"\n}"
+        },
+        {
+          "name": "CreateAllocationGroup",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"costCenterId\":{{costCenterId}},\r\n    \"groupName\": \"{{uniqueGroupName}}\",\r\n    \"description\": \"Allocates Amazon usage tagged with eng\",\r\n    \"costFilters\": {\r\n        \"datasource\": [\r\n            \"Amazon\"\r\n        ],\r\n        \"accounts\": {\r\n            \"Amazon\": [\r\n                \"zainsocialpie\"\r\n            ]\r\n        },\r\n        \"filters\": {\r\n            \"Amazon\": [\r\n                {\r\n                    \"dimension\": \"TRANSACTION_TYPE\",\r\n                    \"filters\": [\r\n                        \"Usage\"\r\n                    ]\r\n                },\r\n                {\r\n                    \"dimension\": \"TAG\",\r\n                    \"tagKey\": \"resourcetags/user:cc\",\r\n                    \"filters\": [\r\n                        \"rds\"\r\n                    ]\r\n                }\r\n            ]\r\n        }\r\n    },\r\n    \"lines\": [\r\n        {\r\n            \"descendantId\": 485,\r\n            \"sharePercent\": 0.8\r\n        },\r\n        {\r\n            \"descendantId\": 487,\r\n            \"sharePercent\": 1\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{costcenter}}/hgs/rest/allocation-group/v2/create",
+              "host": [
+                "{{costcenter}}"
+              ],
+              "path": [
+                "hgs",
+                "rest",
+                "allocation-group",
+                "v2",
+                "create"
+              ]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Server",
+              "value": "nginx/1.18.0 (Ubuntu)"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 11 Feb 2026 10:23:39 GMT"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"id\": 72,\n    \"priority\": 4,\n    \"status\": \"CREATED\"\n}"
+        },
+        {
+          "name": "35Sharepercent",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"costCenterId\": 88,\r\n  \"groupName\": \"{{uniqueGroupName}}\",\r\n  \"description\": \"Allocates Amazon usage tagged with rds across extended descendants\",\r\n  \"costFilters\": {\r\n    \"datasource\": [\"Amazon\"],\r\n    \"accounts\": { \"Amazon\": [\"zainsocialpie\"] },\r\n    \"filters\": {\r\n      \"Amazon\": [\r\n        { \"dimension\": \"TRANSACTION_TYPE\", \"filters\": [\"Usage\"] },\r\n        { \"dimension\": \"TAG\", \"tagKey\": \"resourcetags/user:cc\", \"filters\": [\"rds\"] }\r\n      ]\r\n    }\r\n  },\r\n  \"lines\": [\r\n    { \"descendantId\": 532, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 551, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 523, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 535, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 503, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 509, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 519, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 521, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 541, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 548, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 505, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 530, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 515, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 518, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 536, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 522, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 524, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 540, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 517, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 537, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 544, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 507, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 525, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 526, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 527, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 539, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 552, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 553, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 543, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 504, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 516, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 499, \"sharePercent\": 2.85 },\r\n    { \"descendantId\": 546, \"sharePercent\": 2.85 }\r\n  ]\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{costcenter}}/hgs/rest/allocation-group/v2/create",
+              "host": [
+                "{{costcenter}}"
+              ],
+              "path": [
+                "hgs",
+                "rest",
+                "allocation-group",
+                "v2",
+                "create"
+              ]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Server",
+              "value": "nginx/1.18.0 (Ubuntu)"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 11 Feb 2026 10:50:42 GMT"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "description": "",
+              "type": "text"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"id\": 74,\n    \"priority\": 6,\n    \"status\": \"CREATED\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "FetchAllocationGroupforEditing",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{costcenter}}/hgs/rest/allocation-group/v2/{{allocationGroupId}}",
+          "host": [
+            "{{costcenter}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "allocation-group",
+            "v2",
+            "{{allocationGroupId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "UpdateAllocationGroup",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"groupName\": \"Engineering – Amazon Usage 1\",\r\n    \"description\": \"Updated allocation for engineering 1\",\r\n    \"costFilters\": {\r\n        \"datasource\": [\r\n            \"Amazon\",\r\n            \"Azure\"\r\n        ],\r\n        \"accounts\": {\r\n            \"Amazon\": [\r\n                \"zainsocialpie\"\r\n            ],\r\n            \"Azure\": [\r\n                \"Azure Sam Cost React Data Verification\"\r\n            ]\r\n        },\r\n        \"filters\": {\r\n            \"Amazon\": [\r\n                {\r\n                    \"dimension\": \"TRANSACTION_TYPE\",\r\n                    \"filters\": [\r\n                        \"Usage\"\r\n                    ]\r\n                }\r\n            ],\r\n            \"Azure\": [\r\n                {\r\n                    \"dimension\": \"TRANSACTION_TYPE\",\r\n                    \"filters\": [\r\n                        \"Usage\"\r\n                    ]\r\n                }\r\n            ]\r\n        }\r\n    },\r\n    \"lines\": [\r\n        {\r\n            \"descendantId\": 157,\r\n            \"sharePercent\": 60\r\n        },\r\n        {\r\n            \"descendantId\": 159,\r\n            \"sharePercent\": 40\r\n        }\r\n    ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{costcenter}}/hgs/rest/allocation-group/v2/{{allocationGroupId}}",
+          "host": [
+            "{{costcenter}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "allocation-group",
+            "v2",
+            "{{allocationGroupId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DeleteRequest",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{costcenter}}/hgs/rest/allocation-group/v2/{{allocationGroupId}}",
+          "host": [
+            "{{costcenter}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "allocation-group",
+            "v2",
+            "{{allocationGroupId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "ListAllocationGroupsWithCosts",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{costcenter}}/hgs/rest/allocation-group/v2/all",
+          "host": [
+            "{{costcenter}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "allocation-group",
+            "v2",
+            "all"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GroupsforCostCenter",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{costcenter}}/hgs/rest/costcenter/v2/{{costCenterId}}/groups",
+          "host": [
+            "{{costcenter}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "costcenter",
+            "v2",
+            "{{costCenterId}}",
+            "groups"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DescendantAllocations",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{costcenter}}/hgs/rest/costcenter/v2/descendant/22/allocations",
+          "host": [
+            "{{costcenter}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "costcenter",
+            "v2",
+            "descendant",
+            "22",
+            "allocations"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "AllCostceters",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "New Request",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "DimensionFilter",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"fromDay\": 0,\r\n    \"untilDay\": 365,\r\n    \"costCenterId\": 1,\r\n    \"descendantIds\": [\r\n        5\r\n    ] //optional\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{costcenter}}/hgs/rest/cost/sankey-costcenter",
+          "host": [
+            "{{costcenter}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "cost",
+            "sankey-costcenter"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DimensionEntities",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"costCenterId\": 1,\r\n    \"descendantIds\": [\r\n        5\r\n    ],\r\n    \"accountFilters\": {\r\n        \"accounts\": [],\r\n        \"accountGroups\": []\r\n    },\r\n    \"fromDay\": 0,\r\n    \"untilDay\": 365,\r\n    \"costDimensionLayers\": [],\r\n    \"showOnlyHypEntities\": false,\r\n    \"taggedMode\": null\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{costcenter}}/hgs/rest/cost/entitiesForDimensions-costcenter",
+          "host": [
+            "{{costcenter}}"
+          ],
+          "path": [
+            "hgs",
+            "rest",
+            "cost",
+            "entitiesForDimensions-costcenter"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "costcenter",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "Marketing_id",
+      "value": ""
+    },
+    {
+      "key": "Marketing_sub_dept_id",
+      "value": ""
+    },
+    {
+      "key": "App1_id",
+      "value": ""
+    },
+    {
+      "key": "Engineering_id",
+      "value": ""
+    },
+    {
+      "key": "Engineering_sub_dept_id",
+      "value": ""
+    },
+    {
+      "key": "App2_id",
+      "value": ""
+    },
+    {
+      "key": "allDescendantIds",
+      "value": ""
+    },
+    {
+      "key": "uniqueGroupName",
+      "value": ""
+    },
+    {
+      "key": "HR_id",
+      "value": ""
+    },
+    {
+      "key": "HR_Recruitment_id",
+      "value": ""
+    },
+    {
+      "key": "RecruitmentNonTech_id",
+      "value": ""
+    },
+    {
+      "key": "RecruitmentTech_id",
+      "value": ""
+    },
+    {
+      "key": "HR_Payroll_id",
+      "value": ""
+    },
+    {
+      "key": "PayrollCompliance_id",
+      "value": ""
+    },
+    {
+      "key": "PayrollOperations_id",
+      "value": ""
+    },
+    {
+      "key": "Finance_id",
+      "value": ""
+    },
+    {
+      "key": "Finance_Reporting_id",
+      "value": ""
+    },
+    {
+      "key": "ReportingMonthly_id",
+      "value": ""
+    },
+    {
+      "key": "ReportingQuarterly_id",
+      "value": ""
+    },
+    {
+      "key": "Finance_Accounting_id",
+      "value": ""
+    },
+    {
+      "key": "AccountingAP_id",
+      "value": ""
+    },
+    {
+      "key": "AccountingAR_id",
+      "value": ""
+    },
+    {
+      "key": "Marketing_Content_id",
+      "value": ""
+    },
+    {
+      "key": "ContentSocial_id",
+      "value": ""
+    },
+    {
+      "key": "ContentSocialManagers_id",
+      "value": ""
+    },
+    {
+      "key": "ContentSocialDesigners_id",
+      "value": ""
+    },
+    {
+      "key": "ContentBlog_id",
+      "value": ""
+    },
+    {
+      "key": "ContentBlogEditors_id",
+      "value": ""
+    },
+    {
+      "key": "ContentBlogWriters_id",
+      "value": ""
+    },
+    {
+      "key": "Marketing_Digital_id",
+      "value": ""
+    },
+    {
+      "key": "DigitalAds_id",
+      "value": ""
+    },
+    {
+      "key": "DigitalAdsPPC_id",
+      "value": ""
+    },
+    {
+      "key": "DigitalAdsSocial_id",
+      "value": ""
+    },
+    {
+      "key": "DigitalSEO_id",
+      "value": ""
+    },
+    {
+      "key": "Sales_id",
+      "value": ""
+    },
+    {
+      "key": "Sales_Domestic_id",
+      "value": ""
+    },
+    {
+      "key": "DomesticEast_id",
+      "value": ""
+    },
+    {
+      "key": "DomesticWest_id",
+      "value": ""
+    },
+    {
+      "key": "Sales_International_id",
+      "value": ""
+    },
+    {
+      "key": "InternationalAPAC_id",
+      "value": ""
+    },
+    {
+      "key": "InternationalEMEA_id",
+      "value": ""
+    },
+    {
+      "key": "Engineering_DevOps_id",
+      "value": ""
+    },
+    {
+      "key": "DevOpsCI_id",
+      "value": ""
+    },
+    {
+      "key": "DevOpsCIPipelines_id",
+      "value": ""
+    },
+    {
+      "key": "DevOpsCIInfra_id",
+      "value": ""
+    },
+    {
+      "key": "DevOpsMonitoring_id",
+      "value": ""
+    },
+    {
+      "key": "DevOpsMonitoringAlerts_id",
+      "value": ""
+    },
+    {
+      "key": "DevOpsMonitoringOps_id",
+      "value": ""
+    },
+    {
+      "key": "Engineering_Backend_id",
+      "value": ""
+    },
+    {
+      "key": "AppAPI_id",
+      "value": ""
+    },
+    {
+      "key": "AppDashboard_id",
+      "value": ""
+    },
+    {
+      "key": "AppDashboardAnalytics_id",
+      "value": ""
+    },
+    {
+      "key": "AppDashboardUI_id",
+      "value": ""
+    },
+    {
+      "key": "AppPortal_id",
+      "value": ""
+    },
+    {
+      "key": "AppPortalAuth_id",
+      "value": ""
+    },
+    {
+      "key": "AppPortalUI_id",
+      "value": ""
+    },
+    {
+      "key": "Engineering_Frontend_id",
+      "value": ""
+    },
+    {
+      "key": "FrontendWebsite_id",
+      "value": ""
+    },
+    {
+      "key": "FrontendWebsiteLanding_id",
+      "value": ""
+    },
+    {
+      "key": "FrontendWebsiteCMS_id",
+      "value": ""
+    },
+    {
+      "key": "FrontendMobile_id",
+      "value": ""
+    },
+    {
+      "key": "FrontendMobileiOS_id",
+      "value": ""
+    },
+    {
+      "key": "FrontendMobileAndroid_id",
+      "value": ""
+    },
+    {
+      "key": "HR_Recruitment_NonTech_id",
+      "value": ""
+    },
+    {
+      "key": "HR_Recruitment_Tech_id",
+      "value": ""
+    },
+    {
+      "key": "HR_Payroll_Operations_id",
+      "value": ""
+    },
+    {
+      "key": "HR_Payroll_Compliance_id",
+      "value": ""
+    },
+    {
+      "key": "Finance_Reporting_Monthly_id",
+      "value": ""
+    },
+    {
+      "key": "Finance_Reporting_Quarterly_id",
+      "value": ""
+    },
+    {
+      "key": "Finance_Accounting_AR_id",
+      "value": ""
+    },
+    {
+      "key": "Finance_Accounting_AP_id",
+      "value": ""
+    },
+    {
+      "key": "Marketing_Content_Social_id",
+      "value": ""
+    },
+    {
+      "key": "Marketing_Content_Social_Designers_id",
+      "value": ""
+    },
+    {
+      "key": "Marketing_Content_Social_Managers_id",
+      "value": ""
+    },
+    {
+      "key": "Marketing_Content_Blog_id",
+      "value": ""
+    },
+    {
+      "key": "Marketing_Content_Blog_Writers_id",
+      "value": ""
+    },
+    {
+      "key": "Marketing_Content_Blog_Editors_id",
+      "value": ""
+    },
+    {
+      "key": "Marketing_Digital_Ads_id",
+      "value": ""
+    },
+    {
+      "key": "Marketing_Digital_Ads_Social_id",
+      "value": ""
+    },
+    {
+      "key": "Marketing_Digital_Ads_PPC_id",
+      "value": ""
+    },
+    {
+      "key": "Marketing_Digital_SEO_id",
+      "value": ""
+    },
+    {
+      "key": "Sales_Domestic_North_id",
+      "value": ""
+    },
+    {
+      "key": "Sales_Domestic_East_id",
+      "value": ""
+    },
+    {
+      "key": "Sales_Domestic_West_id",
+      "value": ""
+    },
+    {
+      "key": "Sales_International_APAC_id",
+      "value": ""
+    },
+    {
+      "key": "Sales_International_LATAM_id",
+      "value": ""
+    },
+    {
+      "key": "Sales_International_EMEA_id",
+      "value": ""
+    },
+    {
+      "key": "Engineering_DevOps_CI_id",
+      "value": ""
+    },
+    {
+      "key": "Engineering_DevOps_CI_Infra_id",
+      "value": ""
+    },
+    {
+      "key": "Engineering_DevOps_CI_Pipelines_id",
+      "value": ""
+    },
+    {
+      "key": "Engineering_DevOps_Monitoring_id",
+      "value": ""
+    },
+    {
+      "key": "Engineering_DevOps_Monitoring_Alerts_id",
+      "value": ""
+    },
+    {
+      "key": "Engineering_DevOps_Monitoring_Ops_id",
+      "value": ""
+    },
+    {
+      "key": "Engineering_Backend_QA_id",
+      "value": ""
+    },
+    {
+      "key": "Engineering_Backend_API_id",
+      "value": ""
+    },
+    {
+      "key": "Engineering_Backend_API_Data_id",
+      "value": ""
+    },
+    {
+      "key": "Engineering_Backend_API_Auth_id",
+      "value": ""
+    },
+    {
+      "key": "Engineering_Backend_UI_id",
+      "value": ""
+    },
+    {
+      "key": "Engineering_Frontend_Web_id",
+      "value": ""
+    },
+    {
+      "key": "Engineering_Frontend_Web_Landing_id",
+      "value": ""
+    },
+    {
+      "key": "Engineering_Frontend_Web_CMS_id",
+      "value": ""
+    },
+    {
+      "key": "Engineering_Frontend_Mobile_id",
+      "value": ""
+    },
+    {
+      "key": "Engineering_Frontend_Mobile_iOS_id",
+      "value": ""
+    },
+    {
+      "key": "Engineering_Frontend_Mobile_Android_id",
+      "value": ""
+    },
+    {
+      "key": "Engineering_1_id",
+      "value": ""
+    },
+    {
+      "key": "CC_A_id",
+      "value": ""
+    }
+  ]
+}
